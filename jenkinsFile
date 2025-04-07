@@ -1,9 +1,19 @@
 pipeline {
     agent {
-        label dev-1
+        label 'dev'
     }
     tools {
-        nodejs "node"
+        nodejs 'NodeJS'
+    }
+
+    environment {
+        //NEXUS_NPM_REGISTRY = 'http://your-nexus-url/repository/your-npm-group/' // Replace with your Nexus npm group URL
+        // DEPLOY_PATH = '/opt/your-app'
+        //NODE_VERSION = '18'
+        APP_PACKAGE = '/home/ec2-user/workspace/Node-js-app/app.zip'
+        ANSIBLE_INVENTORY = '/home/ec2-user/Group-21-ansible-work/hosts.ini'
+        ANSIBLE_PLAYBOOK = '/home/ec2-user/Group-21-ansible-work/03-deploy.yml'
+        SEED_DATABASE = 'true' // Set to 'false' for subsequent deployments if you only need to seed once
     }
 
     stages {
@@ -21,17 +31,11 @@ pipeline {
             }
         }
 
-        stage('Test and Build') {
-            steps {
-                sh 'npm test'
-                sh 'npm run build'
-            }
-        }
-
         stage('Package') {
             steps {
-
+                sh 'zip -r app.zip package.json init.js index.js'
             }
         }
+
     }
 }
