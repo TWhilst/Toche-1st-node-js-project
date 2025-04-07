@@ -1,0 +1,37 @@
+pipeline {
+    agent {
+        label dev-1
+    }
+    tools {
+        nodejs "node"
+    }
+
+    stages {
+        stage('Git Checkout') {
+            steps {
+                git branch: 'main',
+                credentialsId: 'Github',
+                url: 'git@github.com:TWhilst/Toche-1st-node-js-project.git'
+            }
+        }
+
+        stage('Install dependencies') {
+            steps {
+                sh 'npm install'
+            }
+        }
+
+        stage('Test and Build') {
+            steps {
+                sh 'npm test'
+                sh 'npm run build'
+            }
+        }
+
+        stage('Package') {
+            steps {
+
+            }
+        }
+    }
+}
