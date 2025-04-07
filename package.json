@@ -6,8 +6,11 @@
     "start": "node index.js",
     "seed": "node init.js"
   },
+  "publishConfig": {
+    "registry" : "http://54.204.113.60:8081/nexus/content/repositories/nodejs-app/"
+  },
   "dependencies": {
-    "express": "^4.18.2",
+    "express": "^5.1.0",
     "mongoose": "^7.2.2"
   }
 }
