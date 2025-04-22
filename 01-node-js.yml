@@ -1,0 +1,21 @@
+---
+- name: Node.js
+  hosts: app3
+  become: true
+
+  tasks:
+    - name: update all installed packages
+      yum:
+        update_only: true
+        update_cache: true
+
+    - name: Download and execute Node.js setup script
+      ansible.builtin.shell: |
+        curl -sL https://rpm.nodesource.com/setup_20.x | bash -
+      args:
+        executable: /bin/bash
+
+    - name: Install Nodejs
+      yum:
+        name: nodejs
+        state: present

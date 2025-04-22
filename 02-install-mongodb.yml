@@ -1,0 +1,22 @@
+---
+- name: Install mongodb
+  hosts: app3
+  become: true
+
+  tasks:
+    - name: Create MongoDB 8.0 repository file
+      ansible.builtin.copy:
+        content: |
+          [mongodb-org-8.0]
+          name=MongoDB Repository
+          baseurl=https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/8.0/x86_64/
+          gpgcheck=1
+          enabled=1
+          gpgkey=https://pgp.mongodb.com/server-8.0.asc
+        dest: /etc/yum.repos.d/mongodb-org-8.0.repo
+        mode: '0644'
+
+    - name: install MongoDB
+      yum:
+        name: mongodb-org
+        state: present

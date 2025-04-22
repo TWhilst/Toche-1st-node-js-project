@@ -1,0 +1,60 @@
+---
+- name: Deploy Node.js Application
+  hosts: app303-deploy.yml
+  become: true
+
+  tasks:
+    - name: Update apt cache (if Debian/Ubuntu)
+      yum:
+        update_cache: yes
+        update_only: yes
+
+    - name: Ensure necessary packages are installed (Node.js, npm, MongoDB)
+      yum:
+        name:
+          - nodejs
+          - mongodb-org
+        state: present
+
+    - name: Ensure MongoDB service is started and enabled
+      service:
+        name: mongod
+        state: started
+        enabled: yes
+
+    - name: Create deployment directory
+      ansible.builtin.file:
+        path: /home/cloud-user/node
+        state: directory
+
+    - name: Copy application package to server
+      ansible.builtin.copy:
+        src: "{{ app_package }}"
+        dest: /home/cloud-user/node
+
+    - name: Extract application package
+      ansible.builtin.unarchive:
+        src: /home/cloud-user/node/app.zip
+        dest: /home/cloud-user/node/
+        remote_src: yes
+
+    - name: Install Node.js dependencies
+      ansible.builtin.command:
+        cmd: npm install
+        chdir: /home/cloud-user/node
+
+    - name: Seed the MongoDB database
+      ansible.builtin.command:
+        cmd: "node init.js"
+        chdir: /home/cloud-user/node
+      when: seed_database == 'true'
+
+    - name: Install pm2 globally
+      npm:
+        name: pm2
+        global: yes
+
+    - name: Start/Restart application with pm2
+      ansible.builtin.command:
+        cmd: "pm2 start"
+        chdir: /home/cloud-user/node
